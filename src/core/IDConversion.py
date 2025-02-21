@@ -1,7 +1,7 @@
 import pandas as pd
 from pathlib import Path
 
-github_url = "https://raw.githubusercontent.com/Seeridia/fzu-learning-center-api/main/source/seatIdConversionTool.csv"
+github_url = "https://raw.githubusercontent.com/Seeridia/fzu-learning-center-api/main/source/seatIdReferenceTable.csv"
 
 def get_space_name_by_id(id: str | int) -> str:
     """根据id获取spaceName
@@ -11,7 +11,7 @@ def get_space_name_by_id(id: str | int) -> str:
         str: 对应的空间名称，如果未找到返回空字符串
     """
     try:
-        file_path = Path(__file__).parent / 'seatIdConversionTool.csv'
+        file_path = Path(__file__).parent / 'seatIdReferenceTable.csv'
         if file_path.exists():
             df = pd.read_csv(file_path)
         else:
@@ -25,21 +25,25 @@ def get_space_name_by_id(id: str | int) -> str:
         print(f"Error: {e}")
         return ''
 
-def get_id_by_space_name(space_name: str) -> str | int:
+def get_id_by_space_name(space_name: str | int) -> str:
     """根据spaceName获取id
     Args:
-        space_name: 空间名称
+        space_name: 空间名称，可以是字符串或整数
     Returns:
         str: 对应的座位ID，如果未找到返回空字符串
     """
     try:
+        space_name_str = str(space_name).lstrip('0')
+        
         file_path = Path(__file__).parent / 'seatIdConversionTool.csv'
         if file_path.exists():
             df = pd.read_csv(file_path)
         else:
             df = pd.read_csv(github_url)
         
-        result = df[df['spaceName'] == space_name]['id']
+        df['spaceName'] = df['spaceName'].astype(str).str.lstrip('0')
+        result = df[df['spaceName'] == space_name_str]['id']
+        
         return result.iloc[0] if not result.empty else ''
     except Exception as e:
         print(f"Error: {e}")
