@@ -3,3 +3,4 @@ token.txt
 build/
 dist/
 myenv/
+__pycache__/
